@@ -126,7 +126,7 @@ class RelativeVisionTransformer(nn.Module):
 
         self.cls_token = nn.Parameter(torch.randn(1, 1, dim)) # learned class embedding
         self.transformer = Transformer(
-            dim=dim, attn_dim=attn_dim, mlp_dim=mlp_dim, num_heads=num_heads, num_layers=num_layers, use_relative=True,max_len=4096)
+            dim=dim, attn_dim=attn_dim, mlp_dim=mlp_dim, num_heads=num_heads, num_layers=num_layers, use_relative=True,max_len=4097)
 
         self.head = nn.Sequential(
             nn.LayerNorm(dim),
