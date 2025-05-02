@@ -35,6 +35,7 @@ class AttentionHead(nn.Module):
             E_rel = self.relative_emb[self.max_len - T:, :].transpose(0, 1)
             Q_rel = torch.matmul(Q, E_rel)
             S_rel = self.skew(Q_rel)
+            print(Q.shape, K.shape, E_rel.shape, Q_rel.shape, S_rel.shape)
             alpha = (torch.matmul(Q, K.transpose(1, 2)) + S_rel) / (self.n_hidden ** 0.5)
         else:
             alpha = torch.matmul(Q, K.transpose(1, 2)) / (self.n_hidden ** 0.5)
@@ -121,6 +122,7 @@ class RelativeVisionTransformer(nn.Module):
                  mlp_dim: int, num_heads: int, num_layers: int):
         super().__init__()
         self.patch_embed = PatchEmbed(img_size=img_size, patch_size=patch_size, nin=n_channels, nout=dim)
+        
 
         self.cls_token = nn.Parameter(torch.randn(1, 1, dim)) # learned class embedding
         self.transformer = Transformer(
@@ -135,6 +137,7 @@ class RelativeVisionTransformer(nn.Module):
         B, T, _ = embs.shape
         cls_token = self.cls_token.expand(len(embs), -1, -1)
         x = torch.cat([cls_token, embs], dim=1)
+        print(x.shape)
         x, alphas = self.transformer(x, attn_mask=None, return_attn=return_attn)
         out = self.head(x)[:, 0]
         return out, alphas
