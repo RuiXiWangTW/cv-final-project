@@ -11,54 +11,8 @@ import torchvision
 import torchvision.transforms as T
 from torchvision.datasets import ImageNet
 from tqdm import tqdm
-from PIL import Image
+from typing import Tuple, Union, Optional, List
 
-class SizeFilterDataset(Dataset):
-    def __init__(self, dataset, min_width=256, min_height=256, num_workers=8):
-        self.dataset = dataset
-        self.min_width = min_width
-        self.min_height = min_height
-        self.num_workers = num_workers
-        self.valid_indices = self._find_valid_indices()
-
-    def _check_size(self, idx):
-        path, _ = self.dataset.samples[idx]
-        try:
-            with Image.open(path) as img:
-                w, h = img.size
-                if w >= self.min_width and h >= self.min_height:
-                    return idx
-        except Exception: pass
-        return None
-
-    def _find_valid_indices(self):
-        indices = list(range(len(self.dataset)))
-        valid = []
-
-        with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
-            for result in executor.map(self._check_size, indices):
-                if result is not None:
-                    valid.append(result)
-
-        return valid
-
-    def __len__(self):
-        return len(self.valid_indices)
-
-    def __getitem__(self, idx):
-        real_idx = self.valid_indices[idx]
-        return self.dataset[real_idx]
-
-class TransformedDataset(Dataset):
-    def __init__(self, base_ds, transform): 
-        self.ds, self.tf = base_ds, transform
-
-    def __len__(self): 
-        return len(self.ds)
-
-    def __getitem__(self, i):
-        img, lbl = self.ds[i]
-        return self.tf(img), lbl
 
 class AttentionHead(nn.Module):
     def __init__(self, dim: int, n_hidden: int, use_relative=False, max_len=-1):

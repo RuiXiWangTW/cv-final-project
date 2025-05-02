@@ -33,17 +33,6 @@ class AverageMeter():
         self.tot += sz
     def calculate(self) -> float:
         return self.num/self.tot
-# class ImagenetteDataset(Dataset):
-#     def __init__(self,image_data,transform=None):
-#         self.image_data=image_data
-#         self.transform=transform
-#     def __len__(self):
-#         return len(self.image_data)
-#     def __getitem__(self,idx):
-#         image_path,label=self.image_data[idx]
-#         image=Image.open(image_path).convert("RGB")
-#         if self.transform: image=self.transform(image)
-#         return image,label
 
 class SizeFilterDataset(Dataset):
     def __init__(self, dataset, min_width=256, min_height=256, num_workers=8):
@@ -348,33 +337,7 @@ class RelativeVisionTransformerCNN(nn.Module):
         out = self.head(x)[:, 0]
         return out, alphas
 if __name__=="__main__":
-    # path = untar_data(URLs.IMAGENETTE_320)
-    # SEED = 1
     device = torch.device("cuda:1")
-    # print(path)
-    # train_path=str(path)+'/train'
-    # valid_path=str(path)+'/val'
-    # csv_path=str(path)+'/noisy_imagenette.csv'
-    # labels_df=pd.read_csv(csv_path)
-    # print(labels_df.columns.tolist())
-    # lbl_dict = dict(
-    #     n01440764='tench',n02102040='English springer',
-    #     n02979186='cassette player',n03000684='chain saw',
-    #     n03028079='church',n03394916='French horn',n03417042='garbage truck',
-    #     n03425413='gas pump',n03445777='golf ball',n03888257='parachute'
-    # )
-    # train_data,val_data=[],[]
-    # for dir in os.scandir(path): print(dir)
-    # label_classes={'cassette player': 0, 'garbage truck': 1, 'tench': 2, 'English springer': 3, 'church': 4, 'parachute': 5, 'French horn': 6, 'chain saw': 7, 'golf ball': 8, 'gas pump': 9}
-    # def label_func(fname):
-    #     return lbl_dict[parent_label(fname)]
-    # for index, row in labels_df.iterrows():
-    #     di=row.to_dict()
-    #     image_path=str(path)+'/'+di['path']
-    #     label=label_classes[label_func(image_path)]
-    #     validate=di['is_valid']
-    #     if validate: val_data.append((image_path,label))
-    #     else: train_data.append((image_path,label))
     img_transform_96=transforms.Compose([
         transforms.RandomCrop((256,256)),
         transforms.Resize((96,96)),

@@ -12,56 +12,8 @@ import torchvision.transforms as T
 from torchvision.datasets import ImageNet
 from tqdm import tqdm
 from PIL import Image
+from typing import Tuple, Union, Optional, List
 
-class SizeFilterDataset(Dataset):
-    def __init__(self, dataset, min_width=256, min_height=256, num_workers=8):
-        self.dataset = dataset
-        self.min_width = min_width
-        self.min_height = min_height
-        self.num_workers = num_workers
-        self.valid_indices = self._find_valid_indices()
-
-    def _check_size(self, idx):
-        path, _ = self.dataset.samples[idx]
-        try:
-            with Image.open(path) as img:
-                w, h = img.size
-                if w >= self.min_width and h >= self.min_height:
-                    return idx
-        except Exception:
-            pass  # Skip corrupted or unreadable images
-        return None
-
-    def _find_valid_indices(self):
-        indices = list(range(len(self.dataset)))
-        valid = []
-
-        with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
-            for result in executor.map(self._check_size, indices):
-                if result is not None:
-                    valid.append(result)
-
-        return valid
-
-    def __len__(self):
-        return len(self.valid_indices)
-
-    def __getitem__(self, idx):
-        real_idx = self.valid_indices[idx]
-        return self.dataset[real_idx]
-    
-class TransformedDataset(Dataset):
-    def __init__(self, dataset, transform):
-        self.dataset=dataset
-        self.transform = transform
-    
-    def __len__(self):
-        return len(self.dataset)
-    
-    def __getitem__(self, idx):
-        img, lable = self.dataset[idx]
-        transformed_img = self.transform(img)
-        return transformed_img, lable
       
 class PatchEmbedSPP(nn.Module):
     def __init__(self, nin, dim, pyramid_levels=[1,2,4]):
