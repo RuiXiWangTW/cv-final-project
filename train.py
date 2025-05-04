@@ -28,7 +28,6 @@ import argparse
 
 def add_train_args(parser):
     parser.add_argument("--model", default="normal", action="store", choices=["normal", "special"])
-    parser.add_argument("--pyramid-level", default=1, action="store", choices=[1, 2, 4])
 
     return parser
 
@@ -153,7 +152,7 @@ if __name__=="__main__":
     val_dataset = SizeFilterDataset(torchvision.datasets.ImageNet("imagenet", split="val"), min_height=256, min_width=256, num_workers=64)
     train_dataset_64 = TransformedDataset(train_dataset, transform=img_transform_64)
     train_dataset_128 = TransformedDataset(train_dataset, transform=img_transform_128)
-    train_dataset_192 = TransformedDataset(train_dataset, transform=img_transform_192)
+    train_dataset_160 = TransformedDataset(train_dataset, transform=img_transform_160)
     train_dataset_256 = TransformedDataset(train_dataset, transform=img_transform_256)
     val_dataset_64 = TransformedDataset(val_dataset, transform=img_transform_64)
     val_dataset_128 = TransformedDataset(val_dataset, transform=img_transform_128)
@@ -162,36 +161,38 @@ if __name__=="__main__":
     val_dataset_192 = TransformedDataset(val_dataset, transform=img_transform_192)
     val_dataset_256 = TransformedDataset(val_dataset, transform=img_transform_256)
 
-    batch_size=64
+    batch_size=128
+    # train_dataset_cat = torch.utils.data.ConcatDataset([train_dataset_64, train_dataset_128, train_dataset_160])
+    # train_dataloader = torch.utils.data.DataLoader(train_dataset_cat, batch_size=batch_size, shuffle=True, num_workers=64)
     train_dataloader_64=torch.utils.data.DataLoader(train_dataset_64, batch_size=batch_size, shuffle=True, num_workers=32)
     train_dataloader_128=torch.utils.data.DataLoader(train_dataset_128, batch_size=batch_size, shuffle=True, num_workers=32)
-    train_dataloader_192=torch.utils.data.DataLoader(train_dataset_192, batch_size=batch_size, shuffle=True, num_workers=32)
+    train_dataloader_160=torch.utils.data.DataLoader(train_dataset_160, batch_size=batch_size, shuffle=True, num_workers=32)
     train_dataloader_256=torch.utils.data.DataLoader(train_dataset_256, batch_size=batch_size, shuffle=True, num_workers=32)
 
-    val_dataloader_64=torch.utils.data.DataLoader(val_dataset_64,batch_size=batch_size,shuffle=False,num_workers=32)
+    val_dataloader_64=torch.utils.data.DataLoader(val_dataset_64,batch_size=batch_size,shuffle=False,num_workers=64)
     val_dataloader_128=torch.utils.data.DataLoader(val_dataset_128,batch_size=batch_size,shuffle=False,num_workers=32)
     val_dataloader_160=torch.utils.data.DataLoader(val_dataset_160,batch_size=batch_size,shuffle=False,num_workers=32)
     val_dataloader_192=torch.utils.data.DataLoader(val_dataset_192,batch_size=batch_size,shuffle=False,num_workers=32)
     val_dataloader_256=torch.utils.data.DataLoader(val_dataset_256,batch_size=batch_size,shuffle=False,num_workers=32)
 
     # train_dataloaders=[train_dataloader_64,train_dataloader_128,train_dataloader_192,train_dataloader_256]
-    train_dataloaders = [train_dataloader_256]
+    train_dataloaders = [train_dataloader_160]
     val_dataloaders=[val_dataloader_64,val_dataloader_128,val_dataset_160,val_dataloader_192,val_dataloader_256]
     resolutions = [64, 128, 160, 192, 256]
 
-    pyramid_level = kwargs["pyramid_level"]
+    # pyramid_level = kwargs["pyramid_level"]
     if kwargs["model"] == "normal":
-        model = RelativeVisionTransformer(n_channels=3, nout=1000, img_size=256, patch_size=4, dim=256, attn_dim=256, mlp_dim=256, num_heads=4, num_layers=8).to(device)
-        val_dataloaders = val_dataloaders[:-1]
+        model = RelativeVisionTransformer(n_channels=3, nout=1000, img_size=256, patch_size=4, dim=128, attn_dim=64, mlp_dim=256, num_heads=4, num_layers=8).to(device)
+        # val_dataloaders = val_dataloaders[:-1]
     else:
-        model = RelativeVisionTransformerSPP(n_channels=3, nout=1000, dim=256, attn_dim=256, mlp_dim=256, num_heads=4, num_layers=8, pyramid_levels=pyramid_level).to(device)
+        model = RelativeVisionTransformerSPP(n_channels=3, nout=1000, dim=128, attn_dim=64, mlp_dim=256, num_heads=4, num_layers=8).to(device)
     # model = SinusoidalVisionTransformerCNN(n_channels=3, nout=1000, patch_size=4, dim=128, attn_dim=64, mlp_dim=256, num_heads=4, num_layers=8).cuda()
     criterion = nn.CrossEntropyLoss()
     NUM_EPOCHS = 10
     if kwargs["model"] == "normal":
         model_name = "model/RelativeVisionTransformer.pt"
     else:
-        model_name = f"model/RelativeVisionTransformerSPP{pyramid_level}.pt"
+        model_name = f"model/RelativeVisionTransformerSPP.pt"
     optimizer = optim.AdamW(model.parameters(), lr=0.0003)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=NUM_EPOCHS)
 
