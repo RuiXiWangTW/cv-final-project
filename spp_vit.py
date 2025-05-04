@@ -135,7 +135,7 @@ class RelativeVisionTransformerSPP(nn.Module):
             dim, attn_dim, mlp_dim,
             num_heads, num_layers,
             use_relative=True,
-            max_len=sum(pyramid_levels) + 1
+            max_len=sum(l*l for l in pyramid_levels)+1
         )
         self.head = nn.Sequential(
             nn.LayerNorm(dim),
