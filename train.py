@@ -25,6 +25,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from normal_vit import RelativeVisionTransformer
 from spp_vit import RelativeVisionTransformerSPP
 import argparse
+import logging
 
 def add_train_args(parser):
     parser.add_argument("--model", default="normal", action="store", choices=["normal", "special"])
@@ -99,7 +100,7 @@ class TransformedDataset(Dataset):
 if __name__=="__main__":
     args = get_args()
     kwargs = args.__dict__
-    device = torch.device("cuda:3")
+    device = torch.device("cuda:3") 
 
     # Using resolutions 64x64, 128x128, 192x192, and 256x256 seem like a good idea for training. 64x64, 128x128, 256x256, 384x384, and 512x512 should work for evaluation.
     img_transform_64=transforms.Compose([
@@ -148,7 +149,7 @@ if __name__=="__main__":
     ])
 
 
-    train_dataset = SizeFilterDataset(torchvision.datasets.ImageNet("imagenet", split="val"), min_height=256, min_width=256, num_workers=64)
+    train_dataset = SizeFilterDataset(torchvision.datasets.ImageNet("imagenet", split="train"), min_height=256, min_width=256, num_workers=64)
     val_dataset = SizeFilterDataset(torchvision.datasets.ImageNet("imagenet", split="val"), min_height=256, min_width=256, num_workers=64)
     train_dataset_64 = TransformedDataset(train_dataset, transform=img_transform_64)
     train_dataset_128 = TransformedDataset(train_dataset, transform=img_transform_128)
@@ -169,15 +170,15 @@ if __name__=="__main__":
     train_dataloader_160=torch.utils.data.DataLoader(train_dataset_160, batch_size=batch_size, shuffle=True, num_workers=32)
     train_dataloader_256=torch.utils.data.DataLoader(train_dataset_256, batch_size=batch_size, shuffle=True, num_workers=32)
 
-    val_dataloader_64=torch.utils.data.DataLoader(val_dataset_64,batch_size=batch_size,shuffle=False,num_workers=64)
+    val_dataloader_64=torch.utils.data.DataLoader(val_dataset_64,batch_size=batch_size,shuffle=False,num_workers=32)
     val_dataloader_128=torch.utils.data.DataLoader(val_dataset_128,batch_size=batch_size,shuffle=False,num_workers=32)
     val_dataloader_160=torch.utils.data.DataLoader(val_dataset_160,batch_size=batch_size,shuffle=False,num_workers=32)
     val_dataloader_192=torch.utils.data.DataLoader(val_dataset_192,batch_size=batch_size,shuffle=False,num_workers=32)
     val_dataloader_256=torch.utils.data.DataLoader(val_dataset_256,batch_size=batch_size,shuffle=False,num_workers=32)
 
     # train_dataloaders=[train_dataloader_64,train_dataloader_128,train_dataloader_192,train_dataloader_256]
-    train_dataloaders = [train_dataloader_160]
-    val_dataloaders=[val_dataloader_64,val_dataloader_128,val_dataset_160,val_dataloader_192,val_dataloader_256]
+    train_dataloaders = [train_dataloader_64,train_dataloader_128,train_dataloader_160]
+    val_dataloaders=[val_dataloader_64,val_dataloader_128,val_dataloader_160,val_dataloader_192,val_dataloader_256]
     resolutions = [64, 128, 160, 192, 256]
 
     # pyramid_level = kwargs["pyramid_level"]
@@ -191,8 +192,17 @@ if __name__=="__main__":
     NUM_EPOCHS = 10
     if kwargs["model"] == "normal":
         model_name = "model/RelativeVisionTransformer.pt"
+        logfile = "normal.log"
     else:
         model_name = f"model/RelativeVisionTransformerSPP.pt"
+        log_file = "SPP.log"
+    
+    logging.basicConfig(filename=log_file, 
+					format='%(asctime)s %(message)s', 
+					filemode='w') 
+    logger=logging.getLogger() 
+    logger.setLevel(logging.INFO)
+
     optimizer = optim.AdamW(model.parameters(), lr=0.0003)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=NUM_EPOCHS)
 
@@ -224,7 +234,6 @@ if __name__=="__main__":
             optimizer.zero_grad()
 
             outputs, _ = model(img)
-            # print(outputs.shape, labels.shape)
             # raise KeyboardInterrupt
             loss = criterion(outputs, labels)
             loss_meter.update(loss.item(), len(img))
@@ -237,13 +246,14 @@ if __name__=="__main__":
         acc_val=acc_meter.calculate()
         training_acc.append((loss_val,acc_val))
         print(f"Train Epoch: {epoch}, Loss: {loss_val}, Acc: {acc_val}")
+        logger.info(f"Train Epoch: {epoch}, Loss: {loss_val}, Acc: {acc_val}")
         for res, val_loader in zip(resolutions, val_dataloaders):
             val_loss, val_acc = evaluate_model(model, criterion, val_loader)
             valid_acc.append((val_loss,val_acc))
             print(f"Val Epoch: {epoch}, Resolution: {res}, Loss: {val_loss}, Acc: {val_acc}")
+            logger.info(f"Val Epoch: {epoch}, Resolution: {res}, Loss: {val_loss}, Acc: {val_acc}")
         torch.save(model.state_dict(),model_name)
     print('Finished Training')
-
-    torch.save(model.state_dict(),model_name)
-    print(training_acc)
-    print(valid_acc)
+    logger.info('Finished Training')
+    # print(training_acc)
+    # print(valid_acc)
