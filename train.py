@@ -29,6 +29,7 @@ import logging
 
 def add_train_args(parser):
     parser.add_argument("--model", default="normal", action="store", choices=["normal", "special"])
+    parser.add_argument("--load", default=False, action="store_true")
 
     return parser
 
@@ -189,13 +190,15 @@ if __name__=="__main__":
         model = RelativeVisionTransformerSPP(n_channels=3, nout=1000, dim=128, attn_dim=64, mlp_dim=256, num_heads=4, num_layers=8).to(device)
     # model = SinusoidalVisionTransformerCNN(n_channels=3, nout=1000, patch_size=4, dim=128, attn_dim=64, mlp_dim=256, num_heads=4, num_layers=8).cuda()
     criterion = nn.CrossEntropyLoss()
-    NUM_EPOCHS = 10
+    NUM_EPOCHS = 20
     if kwargs["model"] == "normal":
         model_name = "model/RelativeVisionTransformer.pt"
-        logfile = "normal.log"
+        log_file = "normal.log"
     else:
         model_name = f"model/RelativeVisionTransformerSPP.pt"
         log_file = "SPP.log"
+    if kwargs["load"]:
+        model.load_state_dict(model_name)
     
     logging.basicConfig(filename=log_file, 
 					format='%(asctime)s %(message)s', 
