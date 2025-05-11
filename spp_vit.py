@@ -18,7 +18,7 @@ from typing import Tuple, Union, Optional, List
 class PatchEmbedSPP(nn.Module):
     def __init__(self, nin, dim, pyramid_levels=[1,2,4]):
         super().__init__()
-        self.conv   = nn.Conv2d(nin, dim, kernel_size=3, padding=1)
+        self.conv = nn.Conv2d(nin, dim, kernel_size=3, padding=1)
         self.levels = pyramid_levels
 
     def forward(self, x):
