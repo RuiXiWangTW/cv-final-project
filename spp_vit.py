@@ -18,11 +18,21 @@ from typing import Tuple, Union, Optional, List
 class PatchEmbedSPP(nn.Module):
     def __init__(self, nin, dim, pyramid_levels=[1,2,4]):
         super().__init__()
-        self.conv = nn.Conv2d(nin, dim, kernel_size=3, padding=1)
+        self.stem = nn.Sequential(
+            nn.Conv2d(nin, 32, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(64, dim, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(dim),
+            nn.ReLU(inplace=True),
+        )
         self.levels = pyramid_levels
 
     def forward(self, x):
-        fmap = self.conv(x)   # (B, dim, H, W)
+        fmap = self.stem(x)   # (B, dim, H, W)
         B, C, _, _ = fmap.shape
         tokens = []
         for l in self.levels:
