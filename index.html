@@ -6836,7 +6836,7 @@ Y = Concat(Flatten(T<sub>1</sub>), Flatten(T<sub>2</sub>), Flatten(T<sub>4</sub>
 
 <p><em>Relative</em> positional encodings model the pairwise relationships between tokens rather than their absolute positions. By encoding inter-token distances, they naturally extend to varying sequence lengths and image resolutions unlike absolute encodings, which typically impose a fixed maximum length.</p>
 
-<p>We employ the relative scheme introduced by Shaw et al.<sup id="fnref:6" role="doc-noteref"><a href="#fn:6" class="footnote" rel="footnote">5</a></sup> and refined by Huang et al.<sup id="fnref:5" role="doc-noteref"><a href="#fn:5" class="footnote" rel="footnote">6</a></sup>. This approach augments the standard self-attention logits with an extra term <code>S<sub>rel</sub></code>:</p>
+<p>We employ the relative scheme introduced by Shaw et al.<sup id="fnref:5" role="doc-noteref"><a href="#fn:5" class="footnote" rel="footnote">5</a></sup> and refined by Huang et al.<sup id="fnref:4" role="doc-noteref"><a href="#fn:4" class="footnote" rel="footnote">4</a></sup>. This approach augments the standard self-attention logits with an extra term <code>S<sub>rel</sub></code>:</p>
 
 <p class="math display">
 \[  
@@ -6868,10 +6868,8 @@ S_{\text{rel}} = Q\,R^\top
   <li>SPP ViT: Relative encodings with Spatial Pyramid Patch Embedder.</li>
 </ol>
 
-<p>For each, we train a model that uses standard fixed length patch embeddings (ViT) and our model that uses convolutional patch embedding (RIViT). While only the latter will be used to evaluate on larger image sizes, the non-convolutional model serves as a baseline for comparison.</p>
-
-<p>The training curves for Relative RIViT are shown below; we see that the model tends to overfit on training data, leading to an increasing gap between training and validation performance.
-<img src="images/relative_curves.png" alt="Relative RIViT Curves" /></p>
+<p>The training curves for SPPViT are shown below.
+<img src="images/relative_curves.png" alt="SPPViT Curves" /></p>
 
 <hr />
 
