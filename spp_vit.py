@@ -33,6 +33,12 @@ class PatchEmbedSPP(nn.Module):
         # concat all levels: (B, sum(l^2), C)
         out = torch.cat(tokens, dim=1)
         return out
+    def get_embeddings(self, x):
+        with torch.no_grad():
+            fmap = self.conv(x)   # (B, dim, H, W)
+            return torch.mean(fmap, dim=1)[0]
+
+
 
 class AttentionHead(nn.Module):
     def __init__(self, dim: int, n_hidden: int, use_relative=False, max_len=-1):
@@ -148,3 +154,9 @@ class RelativeVisionTransformerSPP(nn.Module):
         x    = torch.cat([cls, embs], dim=1)
         x, attn = self.transformer(x, None, return_attn)
         return self.head(x)[:, 0], attn
+    
+    def get_embeddings(self, img):
+        with torch.no_grad():
+            img = img.unsqueeze(0)
+            return self.patch_embed.get_embeddings(img)
+

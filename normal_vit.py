@@ -116,6 +116,11 @@ class PatchEmbed(nn.Module):
     def forward(self, x: torch.Tensor):
         out = self.conv(x).flatten(start_dim=2).transpose(1,2)
         return out
+    def get_embeddings(self, x):
+        with torch.no_grad():
+            out = self.conv(x)
+            print(out.shape)
+            
 class RelativeVisionTransformer(nn.Module):
     def __init__(self, n_channels: int, nout: int, img_size: int, patch_size: int, dim: int, attn_dim: int,
                  mlp_dim: int, num_heads: int, num_layers: int):
@@ -139,3 +144,15 @@ class RelativeVisionTransformer(nn.Module):
         x, alphas = self.transformer(x, attn_mask=None, return_attn=return_attn)
         out = self.head(x)[:, 0]
         return out, alphas
+    
+    def get_embeddings(self, img: torch.Tensor):
+        with torch.no_grad():
+            img = img.unsqueeze(0)
+            embs = self.patch_embed(img) # patch embedding
+            B, T, _ = embs.shape
+
+            cls_token = self.cls_token.expand(len(embs), -1, -1)
+            x = torch.cat([cls_token, embs], dim=1)
+
+            x, _ = self.transformer(x, attn_mask=None)
+            return x[0]
