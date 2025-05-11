@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-        <title>RIViT</title>
+        <title>SPPViT</title>
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <style>/*! normalize.css v4.1.1 | MIT License | github.com/necolas/normalize.css */
             html {
@@ -6718,7 +6718,7 @@
         </style>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </head>
-    <title>🐸 RIViT: Resolution Invariant Vision Transformer</title>
+    <title>SPPViT: Spatial Pyramid Pooling Vision Transformer</title>
 <meta name="generator" content="Jekyll v3.10.0" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="https://zhengsophia.github.io/67960-final-project/" />
@@ -6748,23 +6748,23 @@
   <body>
     <div class="container-lg px-3 my-5 markdown-body">
       
-      <h1 id="rivit-resolution-invariant-vision-transformers-"> 🐸 RIViT: Resolution Invariant Vision Transformer</h1>
+      <h1 id="spp-vision-transformers-"> SPPViT: Spatial Pyramid Pooling Vision Transformer</h1>
 
-<p><em>6.7960 Final Project</em></p>
-<p><em>By Kelly Cui, Andrew Woo, Sophia Zheng</em></p>
-<p><em>12/10/2024</em></p>
+<p><em>6.8300 Final Project</em></p>
+<p><em>By Ray Wang, Andrew Woo</em></p>
+<p><em>5/11/2024</em></p>
 
 <hr />
 
 <h2 id="1-introduction">1. Introduction</h2>
 
-<p>In applications like Natural Language Processing, transformers have quickly become dominant models because of their scalibility and ability to capture long-range dependencies. Vision Transformers (ViTs) adapt the transformer architecture from text to image data. While ViTs perform effectively with large datasets, they still struggle in performance compared to existing convolutional neural network (CNN) models, especially in smaller datasets.</p>
+<p>Transformers have revolutionized natural language processing and are increasingly applied to computer vision through Vision Transformers (ViTs). However, ViTs often underperform compared to Convolutional Neural Networks (CNNs) in image-related tasks, particularly when handling images of varying resolutions. This disparity is largely due to the architectural differences between the two models.</p>
 
-<p>In particular, CNNs outperform ViTs in generalizing across different image resolutions. Our project is interested in improving current ViT architecture by building <strong>resolution invariant ViTs</strong>. Objects naturally appear at different sizes and image resolution. Improving resolution invariance in ViTs poses benefits to fields like healthcare, autonomous systems, and urban planning, where tasks like image classification and semantic segmentation help with object recognition in medical scans and satellite images, input images that often cover a diverse range of sizes.</p>
+<p>CNNs incorporate inductive biases such as locality and weight sharing, which enable them to efficiently capture local features like edges and textures. These biases contribute to CNNs' robustness and generalization capabilities across different image resolutions. While CNNs are not inherently invariant to transformations like translation or scaling, their design allows them to generalize better than ViTs in many scenarios.</p>
 
-<p>We focus on two areas of improvement: <em>standardizing patch embedding lengths across different resolutions</em> and <em>experimenting with positional encodings to combat spatial locality</em>.</p>
+<p>In contrast, ViTs lack these built-in inductive biases and rely heavily on large datasets to learn spatial relationships from scratch. This makes them more sensitive to variations in image resolution and less effective in generalizing across different scales.</p>
 
-<p>Currently, ViTs struggle with resolution scalability, particularly for high-resolution images. When processing ViTs on image input sizes much larger than those from training, model performance declines. To address this, we propose a novel model to improve ViT task accuracy in image classification. For positional encoding, we will test on absolute and relative positional encoding. We hypothesize that standardizing patch embedding lengths and introducing absolute or relative positional encoding will improve task accuracy in classification by dynamically adapting to resolution variability compared to a baseline ViT model.</p>
+<p>Our project aims to enhance the generalization capabilities of ViTs when processing images of varying resolutions.</p>
 
 <h2 id="2-related-work">2. Related Work</h2>
 
