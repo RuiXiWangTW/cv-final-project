@@ -6947,27 +6947,22 @@ S_{\text{rel}} = Q\,R^\top
 
 <h3 id="61-resolution-invariance">5.1. Resolution Invariance</h3>
 
-<p>We note that there is some dropoff in accuracy on higher resolutions, but compared to vanilla patch embedded ViTs which cannot run beyond their initial max token length, we see reasonable performance after scaling resolutions.
+<p>We note that there is some dropoff in accuracy due to the nature of SPPViT compared to Vanilla ViT in general on trained resolutions. This is to be expected- we are heavily reducing the total information passed to the ViT; 86 tokens for SPPViT, compared to 1600 for Vanilla ViT. This is reflected in compute time; SPPViT is up to 10 times faster than Vanilla ViT in terms of training time. We also note that unlike Vanilla ViT, SPP ViT is able to accept any resolution (including unseen) and perform better than Vanilla ViT on all unseen resolutions.
 <img src="images/latent_images.png" alt="Latent Images" />
-In the above figure we show images of the averaged latent spaces of the patch embedder, which shows resolution invariance across the test resolutions 96x96, 128x128, 160x160, and 320x320. As such, we conclude that RIViT captures a CNN’s ability to scale between resolutions while maintaining the benefits of a ViT.</p>
+In the above figure we show images of the averaged latent spaces of the patch embedder, which shows resolution invariance across the test resolutions 96x96, 128x128, 160x160, 192x192, and 256x256. As such, we conclude that SPPViT captures a CNN’s ability to scale between resolutions while maintaining the benefits of a ViT.</p>
 
 <h3 id="62-compute-costs">5.2. Compute Costs</h3>
 
-<p>While normal ViTs are unable to scale beyond their specified max token length, we are able to train normal ViTs to a max resolution of 160x160, leading to ~1600 max token lengths. RIViT reduces all input resolutions to 256 tokens. Even with the multiple convolution operations of our patch embedder, the total training and inference time is shortened by 64.3%, and memory usage is reduced by 32.8% reduction for identical resolutions.</p>
+<p>The vanilla ViT is unable to scale beyond its max token length, leading to a max resolution of 160x160 or 1600 max token length. SPPViT reduces all input resolutions to 85 tokens. Even with the multiple pooling operations of our patch embedder, the total training and inference time is shortened by 85.3%, and memory usage is reduced by 39.8% on the same resolution.</p>
 
-<h3 id="63-rivit-vs-vanilla-patch-embedding">5.3. RIViT vs Vanilla Patch Embedding</h3>
+<h3 id="63-rivit-vs-vanilla-patch-embedding">5.3. Spatial Pyramid Patch Embedder vs Vanilla Patch Embedder</h3>
 
-<p>RIViT consistently outperforms vanilla patch embedding results across the board, showing that the reduction in compute costs and token length do not cause any downsides in accuracy.</p>
-
-<h3 id="64-positional-encodings">5.4. Positional Encodings</h3>
-
-<p>We see that both with and without RIViT, relative positional encodings outperform sinusoidal encodings, which outperform learned positional encodings. This aligns with our hypothesis as relative positonal encodings capture superior contextual information, while sinusoidal encodings provide smoother inductive biases. We see for RIViT that sinusoidal encodings lose less overall performance on larger resolutions due to better generalization on unseen data.</p>
+<p>SPPViT outperforms vanilla patch embedding results across unseen resolutions, showing that the pyramid layers do improve resolution invariance.</p>
+<p>SPPViT underperforms compared to vanilla patch embeddings due to a overall lack of information, which should be improved with additional convolution layers and more pyramid levels.</p>
 
 <h3>5.5. Future Work</h3>
 
-<p>In the future, we hope to explore training and testing on larger models as well as larger datasets. Because of Colab, this project was scoped to the Imagenette dataset which is only subset of the full ImageNet dataset. Larger models and datasets will produce more robustness and generalizability. We would also like to test on higher resolutions, such as 512px and 1024px to continue pushing the resolution invariant cabilities of the augmentations.</p>
-
-<p>Beyond classification, semantic segmentation, object detection, multi-modal learning, and more provide rich applications to test the model's success in other computer vision tasks.</p>
+<p>In the future, we hope to explore larger models and datasets, including the full Imagenet dataset rather than the 1K class subset. We believe that our SPPViT is capable of SOTA performance (with various other improvements) given more compute. We would also like to test on higher/non-square resolutions, to further validate the resolution invariant cabilities of SPPViT.</p>
 
 <hr />
 
