@@ -137,7 +137,7 @@ class Transformer(nn.Module):
 class RelativeVisionTransformerSPP(nn.Module):
     def __init__(self, n_channels, nout, dim, attn_dim,
                  mlp_dim, num_heads, num_layers,
-                 pyramid_levels=[1,2,4]):
+                 pyramid_levels=[1,2,4,8]):
         super().__init__()
         self.patch_embed = PatchEmbedSPP(n_channels, dim, pyramid_levels)
         self.cls_token   = nn.Parameter(torch.randn(1,1,dim))
