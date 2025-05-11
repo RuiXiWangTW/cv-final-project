@@ -6721,15 +6721,11 @@
     <title>SPPViT: Spatial Pyramid Pooling Vision Transformer</title>
 <meta name="generator" content="Jekyll v3.10.0" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="https://zhengsophia.github.io/67960-final-project/" />
-<meta property="og:description" content="https://zhengsophia.github.io/67960-final-project/" />
-<link rel="canonical" href="https://zhengsophia.github.io/67960-final-project/" />
-<meta property="og:url" content="https://zhengsophia.github.io/67960-final-project/" />
-<meta property="og:site_name" content="67960-final-project" />
+<meta property="og:site_name" content="68300-final-project" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","description":"https://zhengsophia.github.io/67960-final-project/","headline":"🐸 RIViT: Resolution Invariant Vision Transformer","name":"67960-final-project","url":"https://zhengsophia.github.io/67960-final-project/"}</script>
+{"@context":"https://schema.org","@type":"WebSite","description":"","headline":"SPPViT: Spatial Pyramid Pooling Vision Transformer","name":"6.8300 Final Project","url":""}</script>
 <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/67960-final-project/assets/css/style.css?v=a2e53ed62983780c016069902dff67adb2f2c1d0">
@@ -6764,128 +6760,116 @@
 
 <p>In contrast, ViTs lack these built-in inductive biases and rely heavily on large datasets to learn spatial relationships from scratch. This makes them more sensitive to variations in image resolution and less effective in generalizing across different scales.</p>
 
-<p>Our project aims to enhance the generalization capabilities of ViTs when processing images of varying resolutions.</p>
+<p>Our project aims to enhance the generalization capabilities of ViTs when processing images of varying resolutions. Vision Transformers (ViTs) often face challenges in scaling effectively to high-resolution images, particularly when the input resolution during inference significantly exceeds that used during training.</p>
+
+<p>To address this issue, we propose a novel approach that integrates Spatial Pyramid Pooling (SPP)<sup id="fnref:7" role="doc-noteref"><a href="#fn:7" class="footnote" rel="footnote">7</a></sup> into the ViT architecture. SPP has demonstrated efficacy in capturing multi-scale contextual information by pooling features at multiple scales, which can enhance the model's ability to generalize across varying image resolutions. By standardizing patch embedding lengths through SPP, our method aims to dynamically adapt to resolution variability, thereby improving task accuracy compared to baseline ViT models.</p>
 
 <h2 id="2-related-work">2. Related Work</h2>
 
 <h3 id="21-vit-with-any-resolution">2.1. ViT with Any Resolution</h3>
 
-<p>ViTAR<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>, or ViT with Any Resolution describes a transformer architecture that uses an adaptive token merger to give fixed size token arrays to be fed into a standard transformer, with fuzzy positional encodings. The token merger uses adaptive “GridAttention” based on image resolution, which is a combination of average pooling with CrossAttention.</p>
+<p>ViTAR<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>, or ViT Any Resolution introduces an Adaptive Token Merger (ATM) that dynamically adjusts token representations based on input resolution. Additionally, it employs Fuzzy Positional Encoding to prevent overfitting to specific resolutions, thereby improving generalization across varying image sizes. We have not been able to locate any true implementation of ViTAR to compare SPPViT against.</p>
 
 <h3 id="22-resformer">2.2. Resformer</h3>
 
-<p>Resformer<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup> proposes multi-resolution training for ViTs to improve resolution invariance. Our model’s novelty lies in its positional encoding methods as well as its use of adaptive pooling during patch embedding to remain resolution invariant.</p>
+<p>Resformer<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup> addresses resolution scalability by incorporating multi-resolution training. It processes replicated images at different resolutions and enforces a scale consistency loss to ensure performance across a wide range of input sizes. Furthermore, it introduces a global-local positional embedding strategy that adapts smoothly to varying resolutions.</p>
 
-<h3 id="23-multi-scale-vision-longformer">2.3. Multi-Scale Vision Longformer</h3>
+<h3 id="23-spp">2.3. Spatial Pyramid Pooling</h3>
 
-<p>Multi-Scale Vision Longformer<sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup> details combining a multi-scale model structure and a Vision Longformer, with attention mechanisms adapted from standard Longformers. This stacks more ViT stages to achieve the multi-scale structure of deep CNNs. Our approach of convolution on patch embedding leverages CNN feature extraction to achieve similar benefits, hybridizing advantages of local CNN extraction and global Transformer modeling.</p>
+<p>Spatial Pyramid Pooling<sup id="fnref:7" role="doc-noteref"><a href="#fn:7" class="footnote" rel="footnote">7</a></sup> enhances a CNN's ability to handle images of varying resolutions by pooling features at multiple scales. This approach captures contextual information effectively, allowing for improved performance in tasks like image classification and semantic segmentation.</p>
 
+<p>Our proposed model builds upon these advancements by integrating various pooling techniques during patch embedding and pre-process information before passing into the ViT. This combination aims to maintain resolution invariance and improve task accuracy in both image classification and semantic segmentation.</p>
 <hr />
 
 <h2 id="4-methodology">3. Methodology</h2>
 
-<p>Our baseline model for comparison will be a vanilla ViT model using learned positional encodings. We will compare the performance of our novel models against the baseline for the task of image classification, using the Imagenette dataset. We will follow ResFormer’s training methodology to perform multi-resolution training.</p>
+<p>Our baseline model for comparison will be a vanilla ViT model using relative positional encodings. We will compare the performance of our SPPViT model against the baseline vanilla ViT for image classification on the ImageNet-1K Dataset. To achieve resolution invariance, we will use convolutional layers with pooling layers on patch embedding outputs to reduce tokens to a fixed size. We hypothesize that learnable conv2D layers will capture more localized features with average pooling to preserve high-resolution data fed into the base transforme</p>
 
 <h3 id="41-dataset">3.1. Dataset</h3>
 
-<p>We train on Imagenette, a subset of ImageNet with 10 distinct classes (tench, English springer, cassette player, chain saw, church, French horn, garbage truck, gas pump, golf ball, parachute). Imagenette consists of ~13,000 images, with a 70/30 train/validation split.</p>
+<p>We train on Imagenet-1K, a subset of ImageNet with 1000 most common classes. Imagenet-1K consists of 1,281,167 training images and 50,000 images for validation split.</p>
 
-<p>Images from Imagenette are loaded with their shorter dimension set to 320px. For training purposes, images are cropped, resized, and normalized to obtain square images. Following Resformer’s multi-resolution training method, each training image is scaled to three different resolutions: 96px, 128px, and 160px.</p>
+<p>Images from Imagenet-1K are filtered to a minimum resolution of 256x256. For training purposes, images are random-cropped, resized, and normalized to augment the training procedure. Following Resformer’s multi-resolution training method, each training image is scaled to multiple different resolutions: 64px, 128px, and 160px. For validation, we scale the images to 64px, 128px, 160px, 192px, 256px.</p>
 
 <h4 id="411-data-augmentations">3.1.1. Data Augmentations</h4>
 
-<p>To improve the robustness of our model, we apply a few random data augmentations:</p>
+<p>We perform the following augmentations to Imagenet-1K for improving robustness:</p>
 
 <ol>
-  <li>Random horizontal flip (p=0.5)</li>
-  <li>Random rotation (-15˚ to 15˚)</li>
-  <li>Random color jitter (brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1)</li>
+  <li>Random rotation</li>
+  <li>Random horizontal flip</li>
+  <li>Random color jitter</li>
 </ol>
 
-<h3 id="42-convolutional-patch-embeddings">3.2. Convolutional Patch Embeddings</h3>
+<h3 id="42-spp-patch-embeddings">3.2. Spatial Pyramid Patch Embeddings</h3>
 
-<p>To achieve resolution invariance, we use convolution and adaptive pooling layers on patch embedding outputs to reduce tokens to a fixed size.
-    \[
-    \text{y} = \text{AdaptiveAvgPool2d}(\text{ReLU}(\text{Conv2d}(\text{ReLU}(\text{Conv2d}(\text{x})))), (64, 64))
-    \]</p>
+<p style="text-align: center;">
+    <img src="images/spp.png"
+         width="50%"
+         alt="SPP Architecture" />
+  </p>
+<p>To achieve resolution invariance, we apply convolutional feature extractors followed by <strong>Spatial Pyramid Pooling (SPP)</strong> on the patch-embedding outputs, yielding a fixed-length token sequence regardless of input size:</p>
 
-<p>Our CNN patch embeddings downsample the input image to extract important local features with conv2D layers before creating patches. The downsampling block is composed of 2 conv2d layers with ReLU activations; each layer convolves a 3×3 kernel with padding to preserve the input resolution. Adaptive average pooling ensures that the patches are resized to 64×64 regardless of input size, making the model robust to different resolutions with a fixed token size. We then split the downsampled, pooled feature map into non-overlapping patches like usual.</p>
+  <pre><code>
+f = ReLU(Conv2d(ReLU(Conv2d(x))))
+T<sub>l</sub> = AdaptiveAvgPool2d(f, (l, l)), l ∈ {1, 2, 4, 8}
+Y = Concat(Flatten(T<sub>1</sub>), Flatten(T<sub>2</sub>), Flatten(T<sub>4</sub>))
+  </code></pre>
 
-<p>
-    This is expected to perform better than vanilla ViTs, where images are directly split into patches, and feature learning does not occur until later on in the Transformer architecture. 
-    Our baseline vanilla and augment ViTs employ non-overlapping patch embedding, where the stride is the kernel size, making the number of input tokens 
-    \(
-    \left\lfloor \frac{h}{h_k} \right\rfloor \times \left\lfloor \frac{w}{w_k} \right\rfloor
-    \).
-</p>
+  <p>Here each level <code>l</code> produces <code>l²</code> tokens, so</p>
+  <pre><code>
+  SPP tokens = ∑<sub>l∈{1,2,4,8}</sub> l² = 1 + 4 + 16 + 64 = 85
+  </code></pre>
+  <p>We then prepend one learned <code>[CLS]</code> token, giving a total sequence length of <strong>86</strong>.</p>
 
-<p>We hypothesize that learnable conv2D layers will capture more localized features with average pooling to preserve high-resolution data fed into the base transformer.</p>
+  <p>Our two <code>3×3</code> <code>Conv2d</code> layers (each with padding to preserve resolution) extract local features before pooling. The SPP block then aggregates those features at multiple grid sizes—1×1, 2×2, and 4×4—so that both coarse and fine spatial patterns are encoded. By concatenating all pooled cells into a single token sequence (plus <code>[CLS]</code>), we maintain a <em>fixed token count</em> and capture multi-scale context.</p>
+
+  <p>This design contrasts with vanilla ViTs, which simply split an image into non-overlapping patches (stride = patch size), producing <code>⌊H/hₖ⌋×⌊W/wₖ⌋</code> tokens. In our SPP-ViT, learnable <code>Conv2d</code> layers first distill rich local representations, and SPP ensures those representations are pooled into a consistent, resolution-agnostic set of tokens—facilitating robust, multi-scale feature learning before feeding into the transformer.</p>
 
 <h3 id="43-positional-encodings">3.3. Positional Encodings</h3>
 
-<p>Along with the convolutional patch embeddings, we experiment with positional encodings to improve our model’s resolution invariance.</p>
+<p>The basic transformer architecture is permutation-invariant (aside from masked attention): the order of the input tokens does not directly affect the outputs of its self-attention layers. However, token positions are critical in both NLP and vision tasks—for example, the position of a word can change a sentence’s meaning, and the location of a patch in an image often correlates with the object it depicts.</p>
 
-<p>The basic transformer architecture is permutation-invariant (with the exception of masked attention); the order of the input tokens does not impact the output of self attention layers. However, token positions can be crucial for both NLP and vision tasks: for example, the position of a word can change the meaning of a sentence, and the location of a patch in an image can correlate to the object it represents.</p>
+<p>To inject positional information while retaining flexibility across different input lengths and image resolutions, we employ relative positional encodings. By encoding the pairwise distances between tokens rather than their absolute indices, relative encodings naturally adapt to varying sequence lengths and spatial resolutions. In our models, we exclusively use relative positional encodings to capture these positional dependencies.</p>
 
-<p>Hence, we need <em>positional encodings</em> to enable our models to learn from the positions of tokens in the input. The choice of positional encoding is especially important for resolution invariance; as resolutions vary, so do the number of possible positions. The positional encoding must be capable of handling different token sequence lengths.</p>
+<h4 id="431-relative-positional-encodings">3.3.1. Relative Positional Encodings</h4>
 
-<p>In our models, we explore three different options for positional encodings.</p>
+<p><em>Relative</em> positional encodings model the pairwise relationships between tokens rather than their absolute positions. By encoding inter-token distances, they naturally extend to varying sequence lengths and image resolutions unlike absolute encodings, which typically impose a fixed maximum length.</p>
 
-<h4 id="431-learned-positional-encodings">3.3.1. Learned Positional Encodings</h4>
+<p>We employ the relative scheme introduced by Shaw et al.<sup id="fnref:5" role="doc-noteref"><a href="#fn:5" class="footnote" rel="footnote">5</a></sup> and refined by Huang et al.<sup id="fnref:4" role="doc-noteref"><a href="#fn:4" class="footnote" rel="footnote">4</a></sup>. This approach augments the standard self-attention logits with an extra term <code>S<sub>rel</sub></code>:</p>
 
-<p>Each position is mapped to a vector of parameters with the same dimension as the token embeddings, and these vectors are added to the token embeddings at each forward pass of the model. This positional encoding matrix is initialized randomly and learned by the model during training.</p>
+<p class="math display">
+\[  
+\text{RelativeAttention}(Q, K, V)
+= \text{Softmax}\!\Bigl(\frac{QK^\top + S_{\text{rel}}}{\sqrt{d}}\Bigr)\,V
+\]
+</p>
 
-<p>Learned positional encodings have the advantage of being tailored to the task at hand, but suffer the drawback of only being trained on limited resolution sizes. Hence, they may not be able to generalize effectively to unseen longer resolution sizes.</p>
+<p>Here, <code>Q</code>, <code>K</code>, and <code>V</code> are the query, key, and value matrices, and <code>d</code> is the attention-head dimensionality. The relative component <code>S<sub>rel</sub></code> is computed as:</p>
 
-<h4 id="432-sinusoidal-position-encodings">3.3.2. Sinusoidal Position Encodings</h4>
+<p class="math display">
+\[
+S_{\text{rel}} = Q\,R^\top
+\]
+</p>
 
-<p>Sinusoidal position encodings also add position encoding vectors to the token embeddings, but this vector is calculated based on a fixed sinusoidal function instead of learned during training.</p>
-
-<p>We implement the sinusoidal encodings as follows, based on the original Transformers paper <sup id="fnref:4" role="doc-noteref"><a href="#fn:4" class="footnote" rel="footnote">4</a></sup>:</p>
-
-\[ PE_{(pos, i)} = \begin{cases}
-    \sin\left(\frac{pos}{10,000^{i/dim}}\right) &amp; \text{for $i$ even} \\
-    \cos\left(\frac{pos}{10,000^{i/dim}}\right) &amp; \text{for $i$ odd}
-\end{cases} \]
-
-<p>Here, \(pos\) is the position index, \(i\) is the \(i-th\) index of positional encoding for \(pos\), and \(dim\) is the dimension of the token embeddings.</p>
-
-<p>This function extends easily to unseen resolution lengths, and requires less memory and computation than learned positional encodings.</p>
-
-<h4 id="433-relative-positional-encodings">3.3.3. Relative Positional Encodings</h4>
-
-<p>The above two methods are both examples of <em>absolute</em> positional encodings, i.e. they encode information for the position alone. However, <em>relative</em> positional encodings capture pairwise information between different positions.</p>
-
-<p>Not only do relative encodings introduce information about the relationships between tokens at different positions, but they can also be more generalizable to different resolutions. By nature, absolute encodings generally limit a model to some maximum token length, while pairwise relative encodings can generalize to unseen token sequence lengths.</p>
-
-<p>We use the relative encoding scheme originating from Shaw et al. <sup id="fnref:6" role="doc-noteref"><a href="#fn:6" class="footnote" rel="footnote">5</a></sup> and adapted by Huang et al.<sup id="fnref:5" role="doc-noteref"><a href="#fn:5" class="footnote" rel="footnote">6</a></sup>, which modifies self-attention to add a new relative component to the keys:</p>
-
-\[RelativeAttention = \text{Softmax}\left(\frac{QK^\intercal + S_{rel}}{\sqrt{dim}}\right)V\]
-
-<p>\(Q\), \(K\), \(V\) refer to the typical attention query, key, and value matrices. \(S_{rel}\) is calculated using \(Q\):</p>
-
-\[S_{rel} = QR^\intercal\]
-
-<p>\(R\) is the relative positional encoding matrix, mapping each pair of tokens to a \(dim\)-length vector.</p>
+<p>where <code>R</code> is the learned relative positional encoding matrix that maps each token-pair offset to a <code>d</code>-dimensional vector.</p>
 
 <h3 id="44-training">3.4. Training</h3>
 
 <h4 id="441-models">3.4.1. Models</h4>
 
-<p><img src="images/RIViT.png" alt="RIViT Architecture" /></p>
+<p><img src="images/sppvit.png" alt="SPPViT Architecture" /></p>
 
-<p>Using the convolutional patch embedding and positional encodings described above, we train three types of ViTs for comparison.</p>
+<p>Using the SPP patch embedding and positional encodings described above, we train two types of ViTs for comparison.</p>
 
 <ol>
-  <li>Vanilla ViT: Learned encodings.</li>
-  <li>Sinusoidal ViT: Sinusoidal encodings.</li>
-  <li>Relative ViT: Relative encodings.</li>
+  <li>Vanilla ViT: Relative encodings.</li>
+  <li>SPP ViT: Relative encodings with Spatial Pyramid Patch Embedder.</li>
 </ol>
 
-<p>For each, we train a model that uses standard fixed length patch embeddings (ViT) and our model that uses convolutional patch embedding (RIViT). While only the latter will be used to evaluate on larger image sizes, the non-convolutional model serves as a baseline for comparison.</p>
-
-<p>The training curves for Relative RIViT are shown below; we see that the model tends to overfit on training data, leading to an increasing gap between training and validation performance.
-<img src="images/relative_curves.png" alt="Relative RIViT Curves" /></p>
+<p>The training curves for SPPViT are shown below.
+<img src="images/relative_curves.png" alt="SPPViT Curves" /></p>
 
 <hr />
 
@@ -7002,31 +6986,29 @@ Tian, R., Wu, Z., Dai, Q., Hu, H., Qiao, Y., &amp; Jiang, Y., 2022. arXiv:2212.0
     </li>
     <li id="fn:3" role="doc-endnote">
 
-      <p><strong>Multi-Scale Vision Longformer: A New Vision Transformer for High-Resolution Image Encoding</strong>
-Zhang, P., Dai, X., Yang, J., Xiao, B., Yuan, L., Zhang, L., &amp; Gao, J., 2021. arXiv:2103.15358. <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+      <p><strong>An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale</strong>
+Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., Uszkoreit, J., &amp; Houlsby, N., 2020. arXiv:2010.11929. <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
     <li id="fn:4" role="doc-endnote">
 
-      <p><strong>An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale</strong>
-Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., Uszkoreit, J., &amp; Houlsby, N., 2020. arXiv:2010.11929. <a href="#fnref:4" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
-    </li>
-    <li id="fn:6" role="doc-endnote">
-
-      <p><strong>Self-Attention with Relative Position Representations</strong>
-Shaw, P., Uszkoreit, J., &amp; Vaswani, A., 2018.
-arXiv:1803.02155. <a href="#fnref:6" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+      <p><strong>Improve Transformer Models with Better Relative Position Embeddings</strong>
+Huang, Z., Liang, D., Xu, P., &amp; Xiang, B., 2020. arXiv:2009.13658. <a href="#fnref:4" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
     <li id="fn:5" role="doc-endnote">
 
-      <p><strong>Improve Transformer Models with Better Relative Position Embeddings</strong>
-Huang, Z., Liang, D., Xu, P., &amp; Xiang, B., 2020. arXiv:2009.13658. <a href="#fnref:5" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+      <p><strong>Self-Attention with Relative Position Representations</strong>
+Shaw, P., Uszkoreit, J., &amp; Vaswani, A., 2018. arXiv:1803.02155. <a href="#fnref:5" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:6" role="doc-endnote">
+        <p><strong>Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition</strong>
+      He, K., Zhang, X., Ren, S., &amp; Sun, J., 2014. arXiv:1406.4729. <a href="#fnref:6" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:7" role="doc-endnote">
+        <p><strong>Theoretical Analysis of Inductive Biases in Deep Convolutional Networks</strong>
+        Wang, Z., &amp; Wu, L., 2024. arXiv:2305.08404. <a href="#fnref:7" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
   </ol>
 </div>
-
-
-      
-    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
     <script>anchors.add();</script>
   </body>
