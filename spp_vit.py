@@ -16,7 +16,7 @@ from typing import Tuple, Union, Optional, List
 
       
 class PatchEmbedSPP(nn.Module):
-    def __init__(self, nin, dim, pyramid_levels=[1,2,4]):
+    def __init__(self, nin, dim, pyramid_levels=[1,2,4,8]):
         super().__init__()
         self.stem = nn.Sequential(
             nn.Conv2d(nin, 32, kernel_size=3, stride=1, padding=1),
