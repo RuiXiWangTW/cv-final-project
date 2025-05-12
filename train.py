@@ -187,7 +187,7 @@ if __name__=="__main__":
         model = RelativeVisionTransformer(n_channels=3, nout=1000, img_size=256, patch_size=4, dim=128, attn_dim=64, mlp_dim=256, num_heads=4, num_layers=8).to(device)
         # val_dataloaders = val_dataloaders[:-1]
     else:
-        model = RelativeVisionTransformerSPP(n_channels=3, nout=1000, dim=128, attn_dim=64, mlp_dim=256, num_heads=4, num_layers=8, pyramid_levels=[1, 2, 4, 8, 12, 16]).to(device)
+        model = RelativeVisionTransformerSPP(n_channels=3, nout=1000, dim=128, attn_dim=64, mlp_dim=256, num_heads=4, num_layers=8).to(device)
     # model = SinusoidalVisionTransformerCNN(n_channels=3, nout=1000, patch_size=4, dim=128, attn_dim=64, mlp_dim=256, num_heads=4, num_layers=8).cuda()
     criterion = nn.CrossEntropyLoss()
     NUM_EPOCHS = 10

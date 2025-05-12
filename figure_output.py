@@ -96,7 +96,7 @@ if __name__=="__main__":
         state_dict = torch.load("model/RelativeVisionTransformer.pt")
         model = RelativeVisionTransformer(n_channels=3, nout=1000, img_size=256, patch_size=4, dim=128, attn_dim=64, mlp_dim=256, num_heads=4, num_layers=8).to(device)
     else:
-        state_dict = torch.load("model/RelativeVisionTransformerSPP_124.pt")
+        state_dict = torch.load("model/RelativeVisionTransformerSPP.pt")
         model = RelativeVisionTransformerSPP(n_channels=3, nout=1000, dim=128, attn_dim=64, mlp_dim=256, num_heads=4, num_layers=8).to(device)
     model.load_state_dict(state_dict)
     val_dataset_64 = TransformedDataset(val_dataset, transform=img_transform_64)
@@ -135,7 +135,7 @@ if __name__=="__main__":
         axes[1, i].set_title(f"Embeddings - res={resolutions[i]}x{resolutions[i]}")
 
     plt.tight_layout()
-    plt.savefig("embedings.pdf")
+    plt.savefig("images/latent_images.png")
     plt.show()
 
     for emb, img, res in zip(embeddings, images, resolutions):

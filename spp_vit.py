@@ -45,7 +45,7 @@ class PatchEmbedSPP(nn.Module):
         return out
     def get_embeddings(self, x):
         with torch.no_grad():
-            fmap = self.conv(x)   # (B, dim, H, W)
+            fmap = self.stem(x)   # (B, dim, H, W)
             return torch.mean(fmap, dim=1)[0]
 
 
