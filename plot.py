@@ -57,9 +57,9 @@ def plot_training_curves(log_files, labels, seen=False):
     plt.grid(True)
     plt.tight_layout()
     if seen:
-        plt.savefig("seen_res_curve.png")
+        plt.savefig("images/seen_res_curve.png")
     else:
-        plt.savefig("unseen_res_curve.png")
+        plt.savefig("images/unseen_res_curve.png")
     # plt.show()
 
 # Usage

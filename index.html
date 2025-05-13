@@ -6783,7 +6783,7 @@
 
 <h2 id="4-methodology">3. Methodology</h2>
 
-<p>Our baseline model for comparison will be a vanilla ViT model using relative positional encodings. We will compare the performance of our SPPViT model against the baseline vanilla ViT for image classification on the ImageNet-1K Dataset. To achieve resolution invariance, we will use convolutional layers with pooling layers on patch embedding outputs to reduce tokens to a fixed size. We hypothesize that learnable conv2D layers will capture more localized features with average pooling to preserve high-resolution data fed into the base transforme</p>
+<p>Our baseline model for comparison will be a Vanilla ViT model using relative positional encodings. We will compare the performance of our SPPViT model against the baseline Vanilla ViT for image classification on the ImageNet-1K Dataset. To achieve resolution invariance, we will use convolutional layers with pooling layers on patch embedding outputs to reduce tokens to a fixed size. We hypothesize that learnable conv2D layers will capture more localized features with average pooling to preserve high-resolution data fed into the base transforme</p>
 
 <h3 id="41-dataset">3.1. Dataset</h3>
 
@@ -6824,7 +6824,7 @@ Y = Concat(Flatten(T<sub>1</sub>), Flatten(T<sub>2</sub>), Flatten(T<sub>4</sub>
 
   <p>Our two <code>3×3</code> <code>Conv2d</code> layers (each with padding to preserve resolution) extract local features before pooling. The SPP block then aggregates those features at multiple grid sizes—1×1, 2×2, and 4×4—so that both coarse and fine spatial patterns are encoded. By concatenating all pooled cells into a single token sequence (plus <code>[CLS]</code>), we maintain a <em>fixed token count</em> and capture multi-scale context.</p>
 
-  <p>This design contrasts with vanilla ViTs, which simply split an image into non-overlapping patches (stride = patch size), producing <code>⌊H/hₖ⌋×⌊W/wₖ⌋</code> tokens. In our SPP-ViT, learnable <code>Conv2d</code> layers first distill rich local representations, and SPP ensures those representations are pooled into a consistent, resolution-agnostic set of tokens—facilitating robust, multi-scale feature learning before feeding into the transformer.</p>
+  <p>This design contrasts with Vanilla ViTs, which simply split an image into non-overlapping patches (stride = patch size), producing <code>⌊H/hₖ⌋×⌊W/wₖ⌋</code> tokens. In our SPP-ViT, learnable <code>Conv2d</code> layers first distill rich local representations, and SPP ensures those representations are pooled into a consistent, resolution-agnostic set of tokens—facilitating robust, multi-scale feature learning before feeding into the transformer.</p>
 
 <h3 id="43-positional-encodings">3.3. Positional Encodings</h3>
 
@@ -6868,80 +6868,49 @@ S_{\text{rel}} = Q\,R^\top
   <li>SPP ViT: Relative encodings with Spatial Pyramid Patch Embedder.</li>
 </ol>
 
-<p>The training curves for SPPViT and normal ViT are shown below.
-<img src="images/seen_res_curve.png" alt="Curves for seen resolution in training" /></p>
-<img src="images/unseen_res_curve.png" alt="Curves for unseen resolution in training" /></p>
 
 
 <hr />
 
 <h2 id="5-results">4. Results</h2>
 
-<h3 id="51-impact-of-patch-embeddings">4.1. Impact of Patch Embeddings</h3>
+<h3 id="51-impact-of-patch-embeddings">4.1. Training Curve</h3>
+<p>The training curves for SPPViT and Vanilla ViT are shown below.
+    <img src="images/seen_res_curve.png" alt="Curves for seen resolution in training" /></p>
+    <img src="images/unseen_res_curve.png" alt="Curves for unseen resolution in training" /></p>
 
-<table>
-  <thead>
-    <tr>
-      <th>Positional Enc.</th>
-      <th>Vanilla Patch Embed Acc</th>
-      <th>Conv. Patch Embed Acc</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Learned</td>
-      <td>73.55%</td>
-      <td>73.54%</td>
-    </tr>
-    <tr>
-      <td>Sinusoidal</td>
-      <td>76.56%</td>
-      <td>77.93%</td>
-    </tr>
-    <tr>
-      <td>Relative</td>
-      <td>77.89%</td>
-      <td>80.56%</td>
-    </tr>
-  </tbody>
-</table>
+<p> We can observe that for the images with resolutions that the model has seen in training, the valuation accuracies of 
+    our SPP_ViT and the Vanilla ViT go up in a similar way. On those images with resolutions unseen by the model, our model can successfully improve the performance
+    throughout the training process while the performance of the Vanilla ViT goes down instead.
+    The result justifies our assumption that the SPP_ViT can offer us a generalized model that can be applied to
+    images with different resolutions, while the Vanilla ViT will overfit on certain resolutions and fail to generalize across different resolutions.
 
-<p>When comparing with the vanilla ViT patch embedding, our model augmentation of convolutional patch embedding outperforms across all positional encodings. While there is insignificant difference in the validation accuracy of the learned positional encodings, our model is more computationally efficient. Because of Colab constraints, the vanilla model could only be run with a batch size of 32 at 8 minute epochs. With our convolutional patch embedding, the model ran with a batch size of 64 at 2.5 minute epochs.</p>
 
 <h3 id="52-evaluation-on-larger-resolutions">4.2. Evaluation on Larger Resolutions</h3>
 
 <table>
-  <thead>
-    <tr>
-      <th>Model</th>
-      <th>Val Acc</th>
-      <th>256px Acc</th>
-      <th>320px Acc</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Vanilla RIViT</td>
-      <td>73.54%</td>
-      <td>69.89%</td>
-      <td>69.73%</td>
-    </tr>
-    <tr>
-      <td>Sinusoidal RIViT</td>
-      <td>78.01%</td>
-      <td>74.90%</td>
-      <td>73.86%</td>
-    </tr>
-    <tr>
-      <td>Relative RIViT</td>
-      <td>80.56%</td>
-      <td>76.52%</td>
-      <td>75.82%</td>
-    </tr>
-  </tbody>
-</table>
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>192px Val Acc</th>
+        <th>256px Val Acc</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Vanilla ViT</td>
+        <td>0.084</td>
+        <td>0.028</td>
+      </tr>
+      <tr>
+        <td>SPPViT</td>
+        <td>0.492</td>
+        <td>0.392</td>
+      </tr>
+    </tbody>
+  </table>
 
-<p>When testing on larger resolutions, sinusoidal and relative RIViT outperform vanilla RIViT in classification. Similar test accuracies on higher resolutions of 256px and 320px support that our architecture augmentations produce a more resolution invariant model.</p>
+<p>When testing on larger resolutions, SPPViT outperforms Vanilla ViT in classification. Similar test accuracies on higher resolutions of 192px and 256px support that our architecture augmentations produce a more resolution invariant model.</p>
 
 <hr />
 
@@ -6949,22 +6918,27 @@ S_{\text{rel}} = Q\,R^\top
 
 <h3 id="61-resolution-invariance">5.1. Resolution Invariance</h3>
 
-<p>We note that there is some dropoff in accuracy due to the nature of SPPViT compared to Vanilla ViT in general on trained resolutions. This is to be expected- we are heavily reducing the total information passed to the ViT; 86 tokens for SPPViT, compared to 1600 for Vanilla ViT. This is reflected in compute time; SPPViT is up to 10 times faster than Vanilla ViT in terms of training time. We also note that unlike Vanilla ViT, SPP ViT is able to accept any resolution (including unseen) and perform better than Vanilla ViT on all unseen resolutions.
+<p>We note that there is some dropoff in accuracy due to the nature of SPPViT compared to Vanilla ViT in general on trained resolutions. This is to be expected- we are heavily reducing the total information passed to the ViT; 86 tokens for SPPViT, compared to 1600 for Vanilla ViT. This is reflected in compute time and GPU usage. We also note that unlike Vanilla ViT, SPP ViT is able to accept any resolution (including unseen) and perform better than Vanilla ViT on all unseen resolutions.
 <img src="images/latent_images.png" alt="Latent Images" />
 In the above figure we show images of the averaged latent spaces of the patch embedder, which shows resolution invariance across the test resolutions 96x96, 128x128, 160x160, 192x192, and 256x256. As such, we conclude that SPPViT captures a CNN’s ability to scale between resolutions while maintaining the benefits of a ViT.</p>
 
 <h3 id="62-compute-costs">5.2. Compute Costs</h3>
 
-<p>The vanilla ViT is unable to scale beyond its max token length, leading to a max resolution of 160x160 or 1600 max token length. SPPViT reduces all input resolutions to 85 tokens. Even with the multiple pooling operations of our patch embedder, the total training and inference time is shortened by 85.3%, and memory usage is reduced by 39.8% on the same resolution.</p>
+<p>The SPPVit model needs around 15GB of GPU memory to train while the Vanilla ViT needs around 70GB of GPU memory to train. The training and inference time of the SPPViT model is also shorten by half. </p>
 
 <h3 id="63-rivit-vs-vanilla-patch-embedding">5.3. Spatial Pyramid Patch Embedder vs Vanilla Patch Embedder</h3>
 
-<p>SPPViT outperforms vanilla patch embedding results across unseen resolutions, showing that the pyramid layers do improve resolution invariance.</p>
-<p>SPPViT underperforms compared to vanilla patch embeddings due to a overall lack of information, which should be improved with additional convolution layers and more pyramid levels.</p>
+<p>SPPViT outperforms Vanilla patch embedding results across unseen resolutions, showing that the pyramid layers do improve resolution invariance.</p>
+<p>SPPViT performs similar to Vanilla patch embeddings due to a overall lack of information, which should be improved with additional convolution layers and more pyramid levels.</p>
 
-<h3>5.5. Future Work</h3>
+<h3>5.4. Future Work</h3>
 
-<p>In the future, we hope to explore larger models and datasets, including the full Imagenet dataset rather than the 1K class subset. We believe that our SPPViT is capable of SOTA performance (with various other improvements) given more compute. We would also like to test on higher/non-square resolutions, to further validate the resolution invariant cabilities of SPPViT.</p>
+<p>In the future, we hope to explore larger models and datasets, including the full Imagenet dataset rather than the 1K class subset.  We also expect that as we increase the number of tokens and the pyramid level, the performance of our SPP_ViT can be further improved
+    We believe that our SPPViT is capable of SOTA performance (with various other improvements) given more compute. We would also like to test on higher/non-square resolutions, to further validate the resolution invariant cabilities of SPPViT.
+</p>
+
+<h2 id="7-Computational Resources">6. Computational Resources</h2>
+<p> The SPPVit model is trained on an A5000 nvidia GPU with 512GB RAM. The Vanilla ViT model is trained on an H100 GPU with 512GB RAM.</p>
 
 <hr />
 
