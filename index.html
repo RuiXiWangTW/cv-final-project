@@ -6884,7 +6884,7 @@ S_{\text{rel}} = Q\,R^\top
     The result justifies our hypothesis that the SPP_ViT can offer us a generalized model that can be applied to images with different resolutions, while the Vanilla ViT will overfit on certain resolutions and fail to generalize across different resolutions.
 
 
-<h3 id="52-evaluation-on-larger-resolutions">4.2. Evaluation on Larger Resolutions</h3>
+<h3 id="52-evaluation-on-larger-resolutions">4.2. Evaluation on Larger(Unseen) Resolutions</h3>
 
 <table>
     <thead>
@@ -6908,7 +6908,39 @@ S_{\text{rel}} = Q\,R^\top
     </tbody>
   </table>
 
-<p>When testing on larger resolutions, SPPViT outperforms Vanilla ViT in classification. Similar test accuracies on higher resolutions of 192px and 256px support that our architecture augmentations produce a more resolution invariant model.</p>
+<p>When testing on larger(unseen) resolutions, SPPViT outperforms Vanilla ViT in classification. Similar test accuracies on higher resolutions of 192px and 256px support that our architecture augmentations produce a more resolution invariant model.</p>
+
+<h3 id="52-evaluation-on-larger-resolutions">4.2. Evaluation on Smaller(Seen) Resolutions</h3>
+
+<table>
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>64px Val Acc</th>
+        <th>128px Val Acc</th>
+        <th>160px Val Acc</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Vanilla ViT</td>
+        <td>0.214</td>
+        <td>0.314</td>
+        <td>0.520</td>
+      </tr>
+      <tr>
+        <td>SPPViT</td>
+        <td>0.213</td>
+        <td>0.486</td>
+        <td>0.500</td>
+      </tr>
+    </tbody>
+  </table>
+
+<p>When testing on smaller(seen) resolutions, SPPViT performs similarly to Vanilla ViT in classification. This supports our claim that the generalization algorithm in the SPPViT design does not detriment the performance on
+    images with resolutions that have been seen by the model in the training process.
+</p>
+
 
 <hr />
 
