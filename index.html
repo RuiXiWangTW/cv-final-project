@@ -6879,11 +6879,9 @@ S_{\text{rel}} = Q\,R^\top
     <img src="images/seen_res_curve.png" alt="Curves for seen resolution in training" /></p>
     <img src="images/unseen_res_curve.png" alt="Curves for unseen resolution in training" /></p>
 
-<p> We can observe that for the images with resolutions that the model has seen in training, the valuation accuracies of 
-    our SPP_ViT and the Vanilla ViT go up in a similar way. On those images with resolutions unseen by the model, our model can successfully improve the performance
-    throughout the training process while the performance of the Vanilla ViT goes down instead.
-    The result justifies our assumption that the SPP_ViT can offer us a generalized model that can be applied to
-    images with different resolutions, while the Vanilla ViT will overfit on certain resolutions and fail to generalize across different resolutions.
+<p> We can observe that for validating seen resolutions, the performance of both models are similar. On unseen resolutions, SPPViT largely outperforms Vanilla ViT.
+    In fact, the performance of the Vanilla ViT decreases during the training process; possibly learning unwanted localized features.
+    The result justifies our hypothesis that the SPP_ViT can offer us a generalized model that can be applied to images with different resolutions, while the Vanilla ViT will overfit on certain resolutions and fail to generalize across different resolutions.
 
 
 <h3 id="52-evaluation-on-larger-resolutions">4.2. Evaluation on Larger Resolutions</h3>
@@ -6918,18 +6916,19 @@ S_{\text{rel}} = Q\,R^\top
 
 <h3 id="61-resolution-invariance">5.1. Resolution Invariance</h3>
 
-<p>We note that there is some dropoff in accuracy due to the nature of SPPViT compared to Vanilla ViT in general on trained resolutions. This is to be expected- we are heavily reducing the total information passed to the ViT; 86 tokens for SPPViT, compared to 1600 for Vanilla ViT. This is reflected in compute time and GPU usage. We also note that unlike Vanilla ViT, SPP ViT is able to accept any resolution (including unseen) and perform better than Vanilla ViT on all unseen resolutions.
+<p>We note that there is no dropoff in accuracy using SPPViT compared to Vanilla ViT in general on trained resolutions. While we are heavily reducing the total information passed to the ViT, 86 tokens for SPPViT, compared to 1600 for Vanilla ViT, the SPP embedder correctly identifies the most important embeds to pass to the ViT.
+    This is also reflected in compute time and GPU usage. We also note that unlike Vanilla ViT, SPP ViT is able to accept any resolution (including larger than trained resolutions) and perform better than Vanilla ViT on all unseen resolutions.
 <img src="images/latent_images.png" alt="Latent Images" />
 In the above figure we show images of the averaged latent spaces of the patch embedder, which shows resolution invariance across the test resolutions 96x96, 128x128, 160x160, 192x192, and 256x256. As such, we conclude that SPPViT captures a CNN’s ability to scale between resolutions while maintaining the benefits of a ViT.</p>
 
 <h3 id="62-compute-costs">5.2. Compute Costs</h3>
 
-<p>The SPPVit model needs around 15GB of GPU memory to train while the Vanilla ViT needs around 70GB of GPU memory to train. The training and inference time of the SPPViT model is also shorten by half. </p>
+<p>The SPPVit model needs around 15GB of GPU memory to train while the Vanilla ViT needs around 70GB of GPU memory to train. The training and inference time of the SPPViT model is also shortened by 50%. </p>
 
 <h3 id="63-rivit-vs-vanilla-patch-embedding">5.3. Spatial Pyramid Patch Embedder vs Vanilla Patch Embedder</h3>
 
 <p>SPPViT outperforms Vanilla patch embedding results across unseen resolutions, showing that the pyramid layers do improve resolution invariance.</p>
-<p>SPPViT performs similar to Vanilla patch embeddings due to a overall lack of information, which should be improved with additional convolution layers and more pyramid levels.</p>
+<p>SPPViT performs similar to Vanilla patch embeddings for seen resolutions due to a overall lack of information, which should be improved with additional convolution layers and more pyramid levels.</p>
 
 <h3>5.4. Future Work</h3>
 
