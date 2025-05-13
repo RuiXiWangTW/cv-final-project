@@ -6960,7 +6960,7 @@ In the above figure we show images of the averaged latent spaces of the patch em
 <h3 id="63-rivit-vs-vanilla-patch-embedding">5.3. Spatial Pyramid Patch Embedder vs Vanilla Patch Embedder</h3>
 
 <p>SPPViT outperforms Vanilla patch embedding results across unseen resolutions, showing that the pyramid layers do improve resolution invariance.</p>
-<p>SPPViT performs similar to Vanilla patch embeddings for seen resolutions due to a overall lack of information, which should be improved with additional convolution layers and more pyramid levels.</p>
+<p>However, SPPViT performs similar to Vanilla patch embeddings for seen resolutions due to a overall lack of information, which could be improved with additional convolution layers and more pyramid levels. Still, SPPViT suffers from information loss due to compressing images of any resolution down to a set number of tokens, potentially limiting performance on very large resolutions.</p>
 
 <h3>5.4. Future Work</h3>
 
