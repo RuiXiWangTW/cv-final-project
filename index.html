@@ -6949,7 +6949,7 @@ S_{\text{rel}} = Q\,R^\top
 <h3 id="61-resolution-invariance">5.1. Resolution Invariance</h3>
 
 <p>We note that there is no dropoff in accuracy using SPPViT compared to Vanilla ViT in general on trained resolutions. While we are heavily reducing the total information passed to the ViT, 86 tokens for SPPViT, compared to 1600 for Vanilla ViT, the SPP embedder correctly identifies the most important embeds to pass to the ViT.
-    This is also reflected in compute time and GPU usage. We also note that unlike Vanilla ViT, SPP ViT is able to accept any resolution (including larger than trained resolutions) and perform better than Vanilla ViT on all unseen resolutions.
+    This is also reflected in compute time and GPU usage. We also note that unlike Vanilla ViT, SPP ViT is able to accept any resolution due to static token lengths and perform better than Vanilla ViT on unseen resolutions.
 <img src="images/latent_images.png" alt="Latent Images" />
 In the above figure we show images of the averaged latent spaces of the patch embedder, which shows resolution invariance across the test resolutions 96x96, 128x128, 160x160, 192x192, and 256x256. As such, we conclude that SPPViT captures a CNN’s ability to scale between resolutions while maintaining the benefits of a ViT.</p>
 
